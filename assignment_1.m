@@ -32,7 +32,38 @@ timeStored = 1;                         % month
 %% Price
 priceR = 55000;     % euros
 priceW = 75000;     % euros
-costR = 30000;      % euros, excluding salary
-costW = 45000;      % euros, excluding salary
-%% question 1
+productionCostsR = 30000;      % euros, excluding salary
+productionCostsW = 45000;      % euros, excluding salary
+%% question 1 & 2
+
+%% question 3
+limR = 1000; % cars per month 
+
+%% question 4 & 5
+reductionInTimePerWorker = 5 / 60;      % hours
+maxNewWorkers = 72;                     % people
+maxBatteryCellsNew = (8 + E1) * 10^6;
+maxRoomAvailableNew = (22 + E3) + 10^3;    % [m^2]
+
+%% question 6
+minProductionR = 1250;      % cars
+minProductionW = 1000;      % cars
+batCellsV = 2 * 10^3;
+roomNeededV = 8;            % [m^2]
+buildTimeV = 8;             % hours
+productionCostsV = 15000;   % euros
+priceV = 45000;             % euros
+minProductionV = 1500;      % cars
+
+
+
+
+
+
+
+
+
+
+
+
 
