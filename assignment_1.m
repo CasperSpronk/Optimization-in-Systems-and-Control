@@ -154,34 +154,49 @@ b6a =  [maxBatteryCellsNew;
         -minProductionR
         -minProductionW
         -minProductionV];
-    
-question6 = linprog(f6a,A6a,b6a);
-if isempty(question6)
-    f6 =   [-profitR -profitW];
-    A6 =   [batCellsR batCellsW; 
-            buildTimeR buildTimeW; 
-            roomNeededR roomNeededW;
-           -1 0;
-            0 -1]; 
-    b6 =   [maxBatteryCellsNew; 
-            totalHours; 
-            maxRoomAvailableNew;
-            -minProductionR
-            -minProductionW];
-    question6 = linprog(f6,A6,b6);
-    if isempty(question6)
+question6a = linprog(f6a,A6a,b6a);
+
+if not(isempty(question6a))
+    profit6a = profitR * floor(question6a(1)) + profitW * floor(question6a(2)) + profitV * floor(question6a)- totalSalary;
+end
+
+f6b =  [-profitR -profitW];
+A6b =  [batCellsR batCellsW; 
+        buildTimeR buildTimeW; 
+        roomNeededR roomNeededW;
+        -1 0;
+        0 -1]; 
+b6b =  [maxBatteryCellsNew; 
+        totalHours; 
+        maxRoomAvailableNew;
+        -minProductionR
+        -minProductionW];
+question6b = linprog(f6,A6,b6);
+
+if not(isempty(question6b))
+    profit6b = profitR * floor(question6b(1)) + profitW * floor(question6b(2)) - totalSalary;
+end
+
+if isempty(question6a)
+    if isempty(question6b)
         disp("there is no optimal solution")
     else
         disp("optimal solution for question 6 is")
-        disp("optimal R = " + floor(question6(1)));
-        disp("optimal W = " + floor(question6(2)));
+        disp("optimal R = " + floor(question6b(1)));
+        disp("optimal W = " + floor(question6b(2)));
         disp("the optimal solution was to not produce the model V");
     end
 else
-    disp("optimal solution for question 6 is")
-    disp("optimal R = " + floor(question6(1)));
-    disp("optimal W = " + floor(question6(2)));
-    disp("optimal V = " + floor(question6(1)));
+    if profit6a > profit6b
+        disp("optimal solution for question 6 is")
+        disp("optimal R = " + floor(question6a(1)));
+        disp("optimal W = " + floor(question6a(2)));
+        disp("optimal V = " + floor(question6a(1)));
+    else
+        disp("optimal solution for question 6 is")
+        disp("optimal R = " + floor(question6b(1)));
+        disp("optimal W = " + floor(question6b(2)));
+    end
 end
 
 
