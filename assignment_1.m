@@ -20,8 +20,8 @@ batCellsW = 6 * 10^3;
 buildTimeR = 10;                        % hours
 buildTimeW = 15;                        % hours
 %% Employees
-employees = 100 + E2;
-maxHoursEmp = 160;
+employees = 100 + E2;                   % people
+maxHoursEmp = 160;                      % hours
 totalHours = maxHoursEmp * employees;   % per month 
 salary = 3000 + 50 * E3;                % euros
 totalSalary = employees * salary;       % guarenteerd because of Unions
@@ -31,12 +31,12 @@ roomNeededR = 10;                       % [m^2]
 roomNeededW = 12;                       % [m^2]
 timeStored = 1;                         % month
 %% Price
-priceR = 55000;     % euros
-priceW = 75000;     % euros
-productionCostsR = 30000;      % euros, excluding salary
-productionCostsW = 45000;      % euros, excluding salary
-profitR = priceR - productionCostsR;
-profitW = priceW - productionCostsW;
+priceR = 55000;                         % euros
+priceW = 75000;                         % euros
+productionCostsR = 30000;               % euros, excluding salary
+productionCostsW = 45000;               % euros, excluding salary
+profitR = priceR - productionCostsR;    % euros
+profitW = priceW - productionCostsW;    % euros
 %% question 1 & 2
 f2 = [-profitR -profitW];
 A2 = [batCellsR batCellsW; 
@@ -49,7 +49,10 @@ b2 = [maxBatteryCells;
     maxRoomAvailable;
     0;
     0];
-question2 = linprog(f2,A2,b2)
+question2 = linprog(f2,A2,b2);
+disp("optimal solution for question 1 is")
+disp("optimal R = " + floor(question2(1)));
+disp("optimal W = " + floor(question2(2)));
 %% question 3
 limR = 1000; % cars per month 
 f3 = [-profitR -profitW];
@@ -65,7 +68,10 @@ b3 = [maxBatteryCells;
     limR;
     0
     0];
-question3 = linprog(f3,A3,b3)
+question3 = linprog(f3,A3,b3);
+disp("optimal solution for question 3 is")
+disp("optimal R = " + floor(question3(1)));
+disp("optimal W = " + floor(question3(2)));
 %% question 4 & 5
 % the results
 reductionInTimePerWorker = 5 / 60;          % hours
@@ -114,8 +120,10 @@ for i = 0:1:maxNewWorkers
         if i ~= 0
             newWorkers = i;
         end
-        disp(question5)
-        disp(newWorkers)
+        disp("optimal new number of workers is " + newWorkers);
+        disp("optimal solution for question 5 is")
+        disp("optimal R = " + floor(question5(1)));
+        disp("optimal W = " + floor(question5(2)));
         break
     end
     currentProfit = newProfit;
@@ -163,9 +171,19 @@ if isempty(question6)
     question6 = linprog(f6,A6,b6);
     if isempty(question6)
         disp("there is no optimal solution")
+    else
+        disp("optimal solution for question 6 is")
+        disp("optimal R = " + floor(question6(1)));
+        disp("optimal W = " + floor(question6(2)));
+        disp("the optimal solution was to not produce the model V");
     end
+else
+    disp("optimal solution for question 6 is")
+    disp("optimal R = " + floor(question6(1)));
+    disp("optimal W = " + floor(question6(2)));
+    disp("optimal V = " + floor(question6(1)));
 end
-disp(question6)
+
 
 
 
