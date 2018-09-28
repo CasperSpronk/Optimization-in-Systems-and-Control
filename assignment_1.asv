@@ -147,8 +147,9 @@ b6a =  [maxBatteryCellsNew;
         -minProductionW
         -minProductionV];
     
-question6 = linprog(f6a,A6a,b6a);
-if isempty(question6)
+question6 = linprog(f6a,A6a,b6a)
+%%
+if question6(3) < minProductionV
     f6 =   [-profitR -profitW];
     A6 =   [batCellsR batCellsW; 
             buildTimeR buildTimeW; 
@@ -160,12 +161,8 @@ if isempty(question6)
             maxRoomAvailableNew;
             -minProductionR
             -minProductionW];
-    question6 = linprog(f6,A6,b6);
-    if isempty(question6)
-        disp("there is no optimal solution")
-    end
+    linprog(f6,A6,b6)
 end
-disp(question6)
 
 
 
