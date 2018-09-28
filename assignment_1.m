@@ -171,7 +171,7 @@ b6b =  [maxBatteryCellsNew;
         maxRoomAvailableNew;
         -minProductionR
         -minProductionW];
-question6b = linprog(f6,A6,b6);
+question6b = linprog(f6b,A6b,b6b);
 
 if not(isempty(question6b))
     profit6b = profitR * floor(question6b(1)) + profitW * floor(question6b(2)) - totalSalary;
