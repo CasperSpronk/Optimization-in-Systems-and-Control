@@ -1,5 +1,5 @@
 % Made by: 
-% Sven Gebroers 4439686
+% Sven Geboers 4439686
 % Casper Spronk 4369475
 %% Setup
 clc
