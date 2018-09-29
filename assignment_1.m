@@ -97,25 +97,25 @@ currentProfit = profitR * floor(question5(1)) + profitW * floor(question5(2)) - 
 % be run agian the loop will return the value that is correct for question
 % 5
 for i = 0:1:maxNewWorkers
-    buildTimeR = buildTimeR - 5/60;
-    buildTimeW = buildTimeW - 5/60;
-    totalHours = totalHours + 160;
-    totalSalary = totalSalary + salary;
+    newBuildTimeR = buildTimeR - 5/60;
+    newBuildTimeW = buildTimeW - 5/60;
+    newTotalHours = totalHours + 160;
+    newTotalSalary = totalSalary + salary;
     f5 =   [-profitR -profitW];
     A5 =   [batCellsR batCellsW; 
-            buildTimeR buildTimeW; 
+            newBuildTimeR newBuildTimeW; 
             roomNeededR roomNeededW;
             1 0;
             -1 0;
             0 -1];
     b5 =   [maxBatteryCellsNew; 
-            totalHours; 
+            newTotalHours; 
             maxRoomAvailableNew;
             limR;
             0
             0];
     question5new = linprog(f5,A5,b5);
-    newProfit = profitR * floor(question5new(1)) + profitW * floor(question5new(2)) - totalSalary;
+    newProfit = profitR * floor(question5new(1)) + profitW * floor(question5new(2)) - newTotalSalary;
     if newProfit < currentProfit || i == maxNewWorkers
         if i ~= 0
             newWorkers = i;
@@ -128,6 +128,10 @@ for i = 0:1:maxNewWorkers
     end
     currentProfit = newProfit;
     question5 = question5new;
+    buildTimeR = newBuildTimeR;
+    buildTimeW = newBuildTimeW;
+    totalHours = newTotalHours;
+    totalSalary = newTotalSalary;
 end
 
 %% question 6
@@ -159,7 +163,6 @@ question6a = linprog(f6a,A6a,b6a);
 if not(isempty(question6a))
     profit6a = profitR * floor(question6a(1)) + profitW * floor(question6a(2)) + profitV * floor(question6a)- totalSalary;
 end
-
 f6b =  [-profitR -profitW];
 A6b =  [batCellsR batCellsW; 
         buildTimeR buildTimeW; 
@@ -198,13 +201,3 @@ else
         disp("optimal W = " + floor(question6b(2)));
     end
 end
-
-
-
-
-
-
-
-
-
-
