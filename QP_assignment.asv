@@ -47,7 +47,7 @@ a = quadprog(H,f);
 Tnew = [];
 for i = 1:(101 + E1)
     Thold = -a(1) * T(i) - a(2) * Qout(i) + a(2) * Qin(i) + Tamb(i) * a(1);
-    Tnew = [Tnew; Thold];
+    Tnew = [Tnew; -Thold];
 end
 
 x = linspace(0,1,150);
