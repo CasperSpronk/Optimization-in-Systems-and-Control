@@ -20,7 +20,7 @@ Qout = measurements(:,2);
 T = measurements(:,3);
 Tamb = measurements(:,4);
 %% Question 1
-tDelta = 3600;
+dt = 3600;
 %B = [-a2 a2];
 %A = -a1;
 %ck = Tamb * a1;
@@ -31,26 +31,30 @@ h2 = 0;
 h3 = 0;
 h4 = 0;
 for i = 1:(101 + E1)
-    f1 = f1 + -2 * T(i+1) * T(i) + 2 * T(i+1) * Tamb(i);
-    f2 = f2 + 2 * T(i+1) * (Qin(i) - Qout(i));
-    h1 = h1 + ((T(i)^2) + (Tamb(i)^2) - 2 * T(i) * Tamb(i)) * 2;
-    h2 = h2 + -T(i) * (Qin(i) - Qout(i));
-    h3 = h3 + 2 * (Qin(i) - Qout(i)) * Tamb(i) *2;
-    h4 = h4 + ((Qout(i)^2) + (Qin(i)^2) + 2 * Qout(i) * Qin(i)) * 2;
+    f1 = f1 + (2*T(i+1)*T(i)-2*T(i+1)*Tamb(i))*dt;
+    f2 = f2 + (2*(Qout(i)-Qin(i))*T(i)-2*T(i+1)*(Qin(i)-Qout(i)))*dt;
+    h1 = h1 + ((T(i)^2)*dt^2+Tamb(i)-Tamb(i)*T(i)*dt*2)*2;
+    h2 = h2 + -2*T(i)*(Qin(i)-Qout(i)+2*(Qin(i)-Qout(i)));
+    h3 = 0;
+    h4 = h4 + ((Qout(i)^2) + (Qin(i)^2) + 2 * Qout(i) * Qin(i))*2*dt^2;
 end
+
 H = [h1 h2; h3 h4];
+H = (H+H')/2;
 f = [f1; f2];
 
 a = quadprog(H,f);
 Tnew = [];
+
 for i = 1:(101 + E1)
-    Thold = -a(1) * T(i) - a(2) * Qout(i) + a(2) * Qin(i) + Tamb(i) * a(1);
+    Thold = (-a(1) * T(i) - a(2) * Qout(i) + a(2) * Qin(i) + Tamb(i) * a(1)) * dt + T(i);
     Tnew = [Tnew; Thold];
 end
 
 x = linspace(0,1,150);
-y = linspace(0,1,111);
+y = linspace(0,1,101 + E1);
 plot(x,T,y,Tnew)
+
 
 %% Question 3
 heatDemand = csvread('heatDemand.csv',1,1);
