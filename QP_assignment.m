@@ -31,12 +31,12 @@ h2 = 0;
 h3 = 0;
 h4 = 0;
 for i = 1:(101 + E1)
-    f1 = f1 + (2*T(i+1)*T(i)-2*T(i+1)*Tamb(i))*dt;
-    f2 = f2 + (2*(Qout(i)-Qin(i))*T(i)-2*T(i+1)*(Qin(i)-Qout(i)))*dt;
-    h1 = h1 + ((T(i)^2)*dt^2+Tamb(i)-Tamb(i)*T(i)*dt*2)*2;
-    h2 = h2 + -2*T(i)*(Qin(i)-Qout(i)+2*(Qin(i)-Qout(i)));
+    f1 = f1 + -2*dt*(T(i))^2+2*T(i+1)*dt*T(i)+2*T(i)*Tamb(i)*dt-2*T(i+1)*dt*Tamb(i);
+    f2 = f2 + (2*(Qin(i)-Qout(i))*dt*T(i)-2*dt*T(i+1)*(Qin(i)-Qout(i)));
+    h1 = h1 + ((T(i)^2)*dt^2+(Tamb(i)*dt)^2-2*Tamb(i)*T(i)^2*dt^2)*2;
+    h2 = h2 + (-2*T(i)*dt^2*(Qin(i)-Qout(i))+2*(Qin(i)-Qout(i))*dt^2*Tamb(i))*2;
     h3 = 0;
-    h4 = h4 + ((Qout(i)^2) + (Qin(i)^2) + 2 * Qout(i) * Qin(i))*2*dt^2;
+    h4 = h4 + (dt^2*((Qout(i)^2) + (Qin(i)^2) - 2 * Qout(i) * Qin(i)))*2;
 end
 
 H = [h1 h2; h3 h4];
@@ -46,14 +46,15 @@ f = [f1; f2];
 a = quadprog(H,f);
 Tnew = [];
 
+
 for i = 1:(101 + E1)
     Thold = (-a(1) * T(i) - a(2) * Qout(i) + a(2) * Qin(i) + Tamb(i) * a(1)) * dt + T(i);
     Tnew = [Tnew; Thold];
 end
 
-x3 = linspace(0,1,150);
+x = linspace(0,1,111);
 y = linspace(0,1,101 + E1);
-plot(x3,T,y,Tnew)
+plot(x,Tnew,x,T(1:111))
 
 
 %% Question 3
@@ -69,42 +70,73 @@ a1 = 1.96 * 10^-7;
 a2 = 3.80 * 10^-9;
 correctPriceVar = 3600 * 10^6;
 inputPrices = inputPrices / correctPriceVar;
-totalCost3 = 0;
 
+f = [inputPrices(1:N,1)*dt; zeros(N+1,1)];
+A = [zeros(N,N+1) -eye(N,N);
+    eye(N,N) zeros(N,N+1);
+    -eye(N,N) zeros(N,N+1)];
+b = [-Tmin*ones(N,1); QinMax*ones(N,1); zeros(N,1)];
+
+partSquareMatrixAeq = (a1 * dt - 1) * eye(N,N + 1);
 for i = 1:N
-    f = [inputPrices(i)*dt, 0];
-    A = [0, -1];
-    b = [-Tmin];
-    Aeq = [-a2*dt, 1];
-    beq = [(-a1*Ttank-a2*heatDemand(i)+a1*Tamb)*dt+Ttank];
-    lb = [0, 0];
-    ub = [QinMax, Inf];
-    x3 = linprog(f,A,b,Aeq,beq,lb,ub);
-    Ttank = x3(2);
-    totalCost3 = totalCost3 + x3(1) * inputPrices(i) * 3600;
+    partSquareMatrixAeq(i,i+1) = 1;
+end
+partSquareMatrixAeq(1,1) = 0;
+
+Aeq = [-eye(N)*a2*dt partSquareMatrixAeq];
+
+beq = [-a2*heatDemand(1)*dt+a1*Tamb*dt+(1-a1*dt)*Ttank];
+
+for i = 2:N
+   beq(i,1) = -a2 * heatDemand(i,1) * dt + a1 * Tamb * dt;
 end
 
-disp("the total cost of keeping the temperature to the minimum is equal to " + totalCost3 + " euros")
+%lb = zeros(1,2*N+1);
+%ub = [ones(1,N)*QinMax Inf*ones(1,N+1)];
+solution3 = linprog(f,A,b,Aeq,beq);
+
+totalCost3 = 0;
+for i = 1:N
+    if size(solution4) ~= 0
+        totalCost3 = totalCost3 + solution3(i,1) * inputPrices(i,1) * 3600;
+    end
+end
+
+
+disp("the total cost of keeping the temperature to the minimum is equal to " + totalCost3 + " euros");
+
+
 %% Question 4
 Tmax = 368;                             % [K]
 totalCost4 = 0;                         % [euro]
 meanSquareErrorCost = 0.1 + E2/10;      % [euro/K^2]
 Tref = 323;                             % [K]   
+
+f = [inputPrices(1:N,1)*dt; zeros(N,1); -2*Tref*meanSquareErrorCost];
+
+H = [zeros(2*N+1,2*N+1)];
+H(2*N+1,2*N+1) = meanSquareErrorCost;
+
+A = [zeros(N,N+1) -eye(N,N);
+    eye(N,N) zeros(N,N+1);
+    -eye(N,N) zeros(N,N+1);
+    zeros(N,N+1) eye(N,N)];
+
+b = [-Tmin*ones(N,1);
+    QinMax*ones(N,1);
+    zeros(N,1); 
+    Tmax*ones(N,1)];
+
+solution4 = quadprog(H,f,A,b,Aeq,beq);
+
 for i = 1:N
-    f = [inputPrices(i)*dt, -2*Tref*meanSquareErrorCost];
-    H = [meanSquareErrorCost 0; 0 0];
-    A = [];
-    b = [];
-    Aeq = [-a2*dt, 1];
-    beq = [(-a1*Ttank-a2*heatDemand(i)+a1*Tamb)*dt+Ttank];
-    lb = [0, Tmin];
-    ub = [QinMax, Tmax];
-    x4 = quadprog(H,f,A,b,Aeq,beq,lb,ub);
-    Ttank = x4(2);
-    totalCost4 = totalCost4 + x4(1) * inputPrices(i) * dt + (x4(2) - Tref) ^2 * meanSquareErrorCost;
+    if size(solution4) ~= 0
+        totalCost4 = totalCost4 + solution4(i,1) * inputPrices(i,1) * 3600;
+    end
 end
 
-disp("the total cost of keeping the temperature to the minimum is equal to " + totalCost4 + " euros")
+totalCost4 = totalCost4 + (solution4(end) - Tref)^2 * meanSquareErrorCost;
+disp("the total cost of keeping the temperature to the minimum is equal to " + totalCost4 + " euros");
 
 
 
