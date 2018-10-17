@@ -51,42 +51,60 @@ for i = 1:(101 + E1)
     Tnew = [Tnew; Thold];
 end
 
-x = linspace(0,1,150);
+x3 = linspace(0,1,150);
 y = linspace(0,1,101 + E1);
-plot(x,T,y,Tnew)
+plot(x3,T,y,Tnew)
 
 
 %% Question 3
+dt = 3600;
 heatDemand = csvread('heatDemand.csv',1,1);
 inputPrices = csvread('inputPrices.csv',1,1);
 N = 360;
 QinMax = (100 + E2) * 10^3;         % [W]
-Ttank = 330 + E3;                      % [K]
+Ttank = 330 + E3;                   % [K]
 Tamb = 275 + E1;                    % [K]   
 Tmin = 315;                         % [K]
 a1 = 1.96 * 10^-7;
 a2 = 3.80 * 10^-9;
-correctPriceVar = 60 * 10^6;
-inputPrices = inputPrices * correctPriceVar;
+correctPriceVar = 3600 * 10^6;
+inputPrices = inputPrices / correctPriceVar;
+totalCost3 = 0;
 
 for i = 1:N
-    f = [inputPrices(i)*tDelta 0];
-    A = [1 0;
-         -1 0
-         0 -1];
-    b = [QinMax;
-        0;
-        Tmin];  
-    Aeq = [a2 a1];
-    
-    
-    
-    linprog(f,A,b,Aeq,beq)
+    f = [inputPrices(i)*dt, 0];
+    A = [0, -1];
+    b = [-Tmin];
+    Aeq = [-a2*dt, 1];
+    beq = [(-a1*Ttank-a2*heatDemand(i)+a1*Tamb)*dt+Ttank];
+    lb = [0, 0];
+    ub = [QinMax, Inf];
+    x3 = linprog(f,A,b,Aeq,beq,lb,ub);
+    Ttank = x3(2);
+    totalCost3 = totalCost3 + x3(1) * inputPrices(i) * 3600;
 end
 
+disp("the total cost of keeping the temperature to the minimum is equal to " + totalCost3 + " euros")
+%% Question 4
+Tmax = 368;                             % [K]
+totalCost4 = 0;                         % [euro]
+meanSquareErrorCost = 0.1 + E2/10;      % [euro/K^2]
+Tref = 323;                             % [K]   
+for i = 1:N
+    f = [inputPrices(i)*dt, -2*Tref*meanSquareErrorCost];
+    H = [meanSquareErrorCost 0; 0 0];
+    A = [];
+    b = [];
+    Aeq = [-a2*dt, 1];
+    beq = [(-a1*Ttank-a2*heatDemand(i)+a1*Tamb)*dt+Ttank];
+    lb = [0, Tmin];
+    ub = [QinMax, Tmax];
+    x4 = quadprog(H,f,A,b,Aeq,beq,lb,ub);
+    Ttank = x4(2);
+    totalCost4 = totalCost4 + x4(1) * inputPrices(i) * dt + (x4(2) - Tref) ^2 * meanSquareErrorCost;
+end
 
-
-
+disp("the total cost of keeping the temperature to the minimum is equal to " + totalCost4 + " euros")
 
 
 
