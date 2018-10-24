@@ -49,20 +49,14 @@ y1 = g(x,u)
 
 
 function xPlus1 = f(x,u)
-speedLimit = 120;               % [km/h]
-lengthOfRoadSegment = 1;        % [km]
-lambda = 3;                     % [number of roadsegments]
-timeStep = 10;                  % [s]
-K = 10;
-tau = 10;                       % [s]
-alpha = 0.1;
-a = 2;
-v_f = 110;                      % [km/h]
-rho_c = 28;                     % [veh/km/lane]
-nu = 80;                        % [km^2/h]
-C_r = 2000;                     % [veh/h]
-rho_m = 120;                    % [veh/km/lane]
+    lengthOfRoadSegment = 1;        % [km]
+    lambda = 3;                     % [number of roadsegments]
+    timeStep = 10;                  % [s]
+    K = 10;
+    tau = 10;                       % [s]
+    nu = 80;                        % [km^2/h]
     xPlus1 = zeros(size(x,1),1);
+    
     % rho 1-4
     xPlus1(1) = x(1) + ...
                 timeStep / lengthOfRoadSegment * x(1) * x(5) + ...
@@ -75,52 +69,46 @@ rho_m = 120;                    % [veh/km/lane]
                 timeStep / lengthOfRoadSegment * x(4) * x(8) + ...
                 timeStep / (lengthOfRoadSegment * lambda) * qr(x,u);
     %v 1-4
+    v0 = 90;
     xPlus1(5) = x(5) + ...
-                timeStep / tau * (V - x(5)) + ...
-                T / tau * x(5) * (v0 - x(5)) - ...
+                timeStep / tau * (V(x,u,5) - x(5)) + ...
+                timeStep / tau * x(5) * (v0 - x(5)) - ...
                 nu * timeStep / (tau * lengthOfRoadSegment) * (x(2) - x(1)) / (x(1) + K);
     for i = 6:8
         xPlus1(i) = x(i) + ...
-                    timeStep / tau * (V - x(i)) + ...
-                    T / tau * x(i) * (v(i - 1) - x(i)) - ...
+                    timeStep / tau * (V(x,u,i) - x(i)) + ...
+                    timeStep / tau * x(i) * (x(i - 1) - x(i)) - ...
                     nu * timeStep / (tau * lengthOfRoadSegment) * (x(i-3) - x(i-4)) / (x(i-4) + K);
     end 
+    % w_r
     xPlus1(9) = x(9) + timeStep * (u(4) - qr(x,u));
 end
 
+function v = V(x,u,i)
+    alpha = 0.1;
+    a = 2;
+    v_f = 110;                      % [km/h]
+    rho_c = 28;                     % [veh/km/lane]
+    
+    v = min([(1 + alpha) * u(1), ... 
+             v_f * exp(-1/a * (x(i-4)/rho_c)^a)]);
+end
+
 function out = qr(x,u)
-speedLimit = 120;               % [km/h]
-lengthOfRoadSegment = 1;        % [km]
-lambda = 3;                     % [number of roadsegments]
-timeStep = 10;                  % [s]
-K = 10;
-tau = 10;                       % [s]
-alpha = 0.1;
-a = 2;
-v_f = 110;                      % [km/h]
-rho_c = 28;                     % [veh/km/lane]
-nu = 80;                        % [km^2/h]
-C_r = 2000;                     % [veh/h]
-rho_m = 120;                    % [veh/km/lane]
+    timeStep = 10;                  % [s]
+    rho_c = 28;                     % [veh/km/lane]
+    C_r = 2000;                     % [veh/h]
+    rho_m = 120;                    % [veh/km/lane]
+    
     out = min([u(2) * C_r, ...
               u(4) + x(9) / timeStep, ...
               C_r * (rho_m - x(4)) / (rho_m - rho_c)]);
 end
 
 function y = g(x,u)
-speedLimit = 120;               % [km/h]
 lengthOfRoadSegment = 1;        % [km]
 lambda = 3;                     % [number of roadsegments]
 timeStep = 10;                  % [s]
-K = 10;
-tau = 10;                       % [s]
-alpha = 0.1;
-a = 2;
-v_f = 110;                      % [km/h]
-rho_c = 28;                     % [veh/km/lane]
-nu = 80;                        % [km^2/h]
-C_r = 2000;                     % [veh/h]
-rho_m = 120;                    % [veh/km/lane]
     y = timeStep * x(9) + timeStep * lengthOfRoadSegment * lambda * (x(1) + x(2) + x(3) + x(4));
 end
 
