@@ -30,22 +30,44 @@ rho_m = 120;                    % [veh/km/lane]
 %% Question 1
 % u = [Vsl(k); r(k); q0(k); Dr(k)]
 
-x = [20;
-     20;
-     20;
-     20;
-     90;
-     90;
-     90;
-     90;
-     0];
- u = [90;
-      1;
-      7000;
-      1500];
-  
-x1 = f(x,u)
-y1 = g(x,u)
+ 
+%% Question 2
+x0 = [120 * ones(60,1); ones(60,1)];
+lb = [60 * ones(1,60), ones(1,60)];
+ub = [120 * ones(1,60), ones(1,60)];
+fun = @objective;
+x = fmincon(fun,x0,[],[],[],[],lb,ub);
+TTS = 0;
+for i = 1:size(x0)/2
+    TTS = TTS + g(x);
+end
+TTS = TTS / 60 / 60;
+disp(TTS);
+%% functions 
+
+function TTS = objective(guess)
+    D1sven = 6;
+    D2sven = 8;
+    D3sven = 6;
+    D1casper = 4;
+    D2casper = 7;
+    D3casper = 5;
+    E1 = (D1sven + D1casper) / 2;
+    E2 = (D2sven + D2casper) / 2;
+    E3 = (D3sven + D3casper) / 2;
+    Dr = 1500;
+    q0 = 7000 + 100 * E1;
+    x = [20; 20; 20; 20; 90; 1.1 * guess(1,1); 1.1 * guess(1,1); 90; 0];
+    TTS = g(x);
+    for i = 1:size(guess,1) / 2
+        if i == 12
+            q0 = 2000 + 100 * E2;
+        end
+        u = [guess(i); guess(i + size(guess,1) / 2); q0; Dr];
+        x = f(x,u);
+        TTS = TTS + g(x);
+    end
+end
 
 
 function xPlus1 = f(x,u)
@@ -59,11 +81,11 @@ function xPlus1 = f(x,u)
     
     % rho 1-4
     xPlus1(1) = x(1) + ...
-                (timeStep / lengthOfRoadSegment * x(1) * x(5))/60/60 + ...
-                (timeStep / (lengthOfRoadSegment * lambda) * u(3))/60/60;
+                (timeStep / (lengthOfRoadSegment * lambda) * u(3))/60/60 - ...
+                (timeStep / lengthOfRoadSegment * x(1) * x(5))/60/60;
     for i = 2:3
         xPlus1(i) = x(i) + ...
-                    (timeStep / lengthOfRoadSegment) * ((x(i) * x(i + 4)  + x(i - 1) * x(i + 3)))/60/60
+                    (timeStep / lengthOfRoadSegment) * ((x(i - 1) * x(i + 3)) - x(i) * x(i + 4))/60/60;
     end 
     xPlus1(4) = x(4) + ...
                 (timeStep / lengthOfRoadSegment * x(3) * x(7))/60/60 - ...
@@ -112,10 +134,10 @@ function out = qr(x,u)
               C_r * (rho_m - x(4)) / (rho_m - rho_c)]);
 end
 
-function y = g(x,u)
-lengthOfRoadSegment = 1;        % [km]
-lambda = 3;                     % [number of roadsegments]
-timeStep = 10;                  % [s]
+function y = g(x)                   % output in seconds * cars
+    lengthOfRoadSegment = 1;        % [km]
+    lambda = 3;                     % [number of roadsegments]
+    timeStep = 10;                  % [s]
     y = timeStep * x(9) + timeStep * lengthOfRoadSegment * lambda * (x(1) + x(2) + x(3) + x(4));
 end
 
