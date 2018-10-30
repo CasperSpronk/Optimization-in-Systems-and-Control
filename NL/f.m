@@ -37,5 +37,6 @@ function xPlus1 = f(x,u)
         end
     end 
     % w_r
-    xPlus1(9) = x(9) + timeStep * ((u(4) - g_r(x,u)))/60/60;
+    xPlusHold = timeStep * ((u(4) - g_r(x,u)))/(60*60);
+    xPlus1(9) = x(9) + xPlusHold;
 end

@@ -51,12 +51,12 @@ lb12_60question3_60 = repmat(lb12_60question3_60,1,49);
 
 lbquestion3_60 = [lb1question3_60,lb2_11question3_60,lb12_60question3_60];
 
-ub1question3_60 = [20; 20; 20; 20; 90 * ones(4,1); 0; speedLimit; 1; 7000+100*E1; 1500];
+ub1question3_60 = [20; 20; 20; 20; 90 * ones(4,1); Inf; speedLimit; 1; 7000+100*E1; 1500];
 
-ub2_11question3_60 = [rho_m * ones(4,1); speedLimit * ones(4,1); 0; speedLimit; 1; 7000+100*E1; 1500];
+ub2_11question3_60 = [rho_m * ones(4,1); speedLimit * ones(4,1); Inf; speedLimit; 1; 7000+100*E1; 1500];
 ub2_11question3_60 = repmat(ub2_11question3_60,1,10);
 
-ub12_60question3_60 = [rho_m * ones(4,1); speedLimit * ones(4,1); 0; speedLimit; 1; 2000+100*E2; 1500];
+ub12_60question3_60 = [rho_m * ones(4,1); speedLimit * ones(4,1); Inf; speedLimit; 1; 2000+100*E2; 1500];
 ub12_60question3_60 = repmat(ub12_60question3_60,1,49);
 
 ubquestion3_60 = [ub1question3_60,ub2_11question3_60,ub12_60question3_60];
@@ -99,12 +99,12 @@ lb12_60question3_120 = repmat(lb12_60question3_120,1,49);
 
 lbquestion3_120 = [lb1question3_120,lb2_11question3_120,lb12_60question3_120];
 
-ub1question3_120 = [20; 20; 20; 20; 90 * ones(4,1); 0; speedLimit; 1; 7000+100*E1; 1500];
+ub1question3_120 = [20; 20; 20; 20; 90 * ones(4,1); Inf; speedLimit; 1; 7000+100*E1; 1500];
 
-ub2_11question3_120 = [rho_m * ones(4,1); speedLimit * ones(4,1); 0; speedLimit; 1; 7000+100*E1; 1500];
+ub2_11question3_120 = [rho_m * ones(4,1); speedLimit * ones(4,1); Inf; speedLimit; 1; 7000+100*E1; 1500];
 ub2_11question3_120 = repmat(ub2_11question3_120,1,10);
 
-ub12_60question3_120 = [rho_m * ones(4,1); speedLimit * ones(4,1); 0; speedLimit; 1; 2000+100*E2; 1500];
+ub12_60question3_120 = [rho_m * ones(4,1); speedLimit * ones(4,1); Inf; speedLimit; 1; 2000+100*E2; 1500];
 ub12_60question3_120 = repmat(ub12_60question3_120,1,49);
 
 ubquestion3_120 = [ub1question3_120,ub2_11question3_120,ub12_60question3_120];
@@ -114,16 +114,16 @@ xQuestion3_120 = fmincon(@fun,x0question3_120,[],[],[],[],lbquestion3_120,ubques
 TTS = 0;
 fun(xQuestion3_120)/60/60
 
-figure('Name','current speed with VSL starting at 120 km/h')
-plot(xQuestion3_120(5,:))
-hold on
-plot(xQuestion3_120(6,:))
-hold on
-plot(xQuestion3_120(7,:))
-hold on
-plot(xQuestion3_120(8,:))
-title('Current speed per lane')
-legend('Lane 1','Lane 2','Lane 3','Lane 4')
+% figure('Name','current speed with VSL starting at 120 km/h')
+% plot(xQuestion3_120(5,:))
+% hold on
+% plot(xQuestion3_120(6,:))
+% hold on
+% plot(xQuestion3_120(7,:))
+% hold on
+% plot(xQuestion3_120(8,:))
+% title('Current speed per lane')
+% legend('Lane 1','Lane 2','Lane 3','Lane 4')
 
 %% Question 4
 rampMaxQueue = 20 - E3;
@@ -148,12 +148,12 @@ lb12_60question4 = repmat(lb12_60question4,1,49);
 
 lbquestion4 = [lb1question4,lb2_11question4,lb12_60question4];
 
-ub1question4 = [20; 20; 20; 20; 90 * ones(4,1); rampMaxQueue; speedLimit; 1; 7000+100*E1; 1500];
+ub1question4 = [20; 20; 20; 20; 90 * ones(4,1); Inf; speedLimit; 0; 7000+100*E1; 1500];
 
-ub2_11question4 = [rho_m * ones(4,1); speedLimit * ones(4,1); rampMaxQueue; speedLimit; 1; 7000+100*E1; 1500];
+ub2_11question4 = [rho_m * ones(4,1); speedLimit * ones(4,1); Inf; speedLimit; 0; 7000+100*E1; 1500];
 ub2_11question4 = repmat(ub2_11question4,1,10);
 
-ub12_60question4 = [rho_m * ones(4,1); speedLimit * ones(4,1); rampMaxQueue; speedLimit; 1; 2000+100*E2; 1500];
+ub12_60question4 = [rho_m * ones(4,1); speedLimit * ones(4,1); Inf; speedLimit; 0; 2000+100*E2; 1500];
 ub12_60question4 = repmat(ub12_60question4,1,49);
 
 ubquestion4 = [ub1question4,ub2_11question4,ub12_60question4];
@@ -162,16 +162,16 @@ nlconfunc = @nlcon;
 xQuestion4 = fmincon(@fun,x0question3_120,[],[],[],[],lbquestion4,ubquestion4,nlconfunc);
 fun(xQuestion4)/60/60
 
-figure('Name','current speed with ramp meter on')
-plot(xQuestion4(5,:))
-hold on
-plot(xQuestion4(6,:))
-hold on
-plot(xQuestion4(7,:))
-hold on
-plot(xQuestion4(8,:))
-title('Current speed per lane')
-legend('Lane 1','Lane 2','Lane 3','Lane 4')
+% figure('Name','current speed with ramp meter on')
+% plot(xQuestion4(5,:))
+% hold on
+% plot(xQuestion4(6,:))
+% hold on
+% plot(xQuestion4(7,:))
+% hold on
+% plot(xQuestion4(8,:))
+% title('Current speed per lane')
+% legend('Lane 1','Lane 2','Lane 3','Lane 4')
 
 
 %% plots
