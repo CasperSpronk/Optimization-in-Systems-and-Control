@@ -32,10 +32,13 @@ rho_m = 120;                    % [veh/km/lane]
 
  
 %% Question 2
-x0 = [20 * ones(4,1); 90 * ones(4,1); 0; 120; 1] * ones(60,1);
-lb = [0, 0, 0, 0, 60 * ones(1,4), 0, 60, 1] * ones(60,1);
-ub = [rho_m * ones(1,4), speedLimit * ones(1,4), 0, speedLimit, 1] * ones(60,1);
-fun = @g;
+x0 = [20 * ones(4,1); 90 * ones(4,1); 0; 120; 1];
+x0 = repmat(x0,1,60);
+lb = [0, 0, 0, 0, 60 * ones(1,4), 0, 60, 1];
+lb = repmat(lb,1,60);
+ub = [rho_m * ones(1,4), speedLimit * ones(1,4), 0, speedLimit, 1];
+ub = repmat(ub,1,60);
+%fun = @g;
 nlconfunc = @nlcon;
 x = fmincon(fun,x0,[],[],[],[],lb,ub,nlconfunc);
 TTS = 0;
