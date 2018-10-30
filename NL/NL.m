@@ -32,21 +32,36 @@ rho_m = 120;                    % [veh/km/lane]
 
  
 %% Question 2
-x0 = [20 * ones(4,1); 90 * ones(4,1); 0; 120; 1];
-x0 = repmat(x0,1,60);
-lb = [0, 0, 0, 0, 60 * ones(1,4), 0, 60, 1];
-lb = repmat(lb,1,60);
-ub = [rho_m * ones(1,4), speedLimit * ones(1,4), 0, speedLimit, 1];
-ub = repmat(ub,1,60);
+x1_11 = [20 * ones(4,1); 90 * ones(4,1); 0; 120; 1; 7000+100*E1; 1500];
+x1_11 = repmat(x1_11,1,11);
+
+x12_60 = [20 * ones(4,1); 90 * ones(4,1); 0; 120; 1; 2000+100*E2; 1500];
+x12_60 = repmat(x12_60,1,49);
+
+x0 = [x1_11,x12_60];
+
+lb1 = [20, 20, 20, 20, 90 * ones(1,4), 0, 60, 1, 7000+100*E1, 1500];
+lb2_11 = [0, 0, 0, 0, 60 * ones(1,4), 0, 60, 1, 7000+100*E1, 1500];
+lb2_11 = repmat(lb2_11,1,11);
+
+lb12_60 = [0, 0, 0, 0, 60 * ones(1,4), 0, 60, 1, 2000+100*E2, 1500];
+lb12_60 = repmat(lb12_60,1,49);
+
+lb = [lb1,lb2_11,lb12_60];
+
+ub1 = [20, 20, 20, 20, 90 * ones(1,4), 0, speedLimit, 1, 7000+100*E1, 1500];
+ub2_11 = [rho_m * ones(1,4), speedLimit * ones(1,4), 0, speedLimit, 1, 7000+100*E1, 1500];
+ub2_11 = repmat(ub2_11,1,11);
+
+ub12_60 = [rho_m * ones(1,4), speedLimit * ones(1,4), 0, speedLimit, 1, 2000+100*E2, 1500];
+ub12_60 = repmat(ub12_60,1,49);
+
+ub = [ub1,ub2_11,ub12_60];
 %fun = @g;
 nlconfunc = @nlcon;
-x = fmincon(fun,x0,[],[],[],[],lb,ub,nlconfunc);
+x = fmincon(@fun,x0,[],[],[],[],lb,ub);%,nlconfunc);
 TTS = 0;
-for i = 1:size(x0)/2
-    TTS = TTS + g(x);
-end
-TTS = TTS / 60 / 60;
-disp(TTS);
+fun(x)/60/60
 %% functions 
 
 

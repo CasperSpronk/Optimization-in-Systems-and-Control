@@ -1,4 +1,5 @@
-function out = qr(x,u)
+function out = qr(x)
+    u = x(
     timeStep = 10;                  % [s]
     rho_c = 28;                     % [veh/km/lane]
     C_r = 2000;                     % [veh/h]

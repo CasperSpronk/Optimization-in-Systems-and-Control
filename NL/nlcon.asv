@@ -1,5 +1,0 @@
-function [c,ceq] = nlcon(x)
-    for i = 1:size(x)
-        ceq = f(x(i),u) - x(1+1);
-    end
-end
