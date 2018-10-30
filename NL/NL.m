@@ -29,6 +29,40 @@ C_r = 2000;                     % [veh/h]
 rho_m = 120;                    % [veh/km/lane]
 %% Question 1
 % u = [Vsl(k); r(k); q0(k); Dr(k)]
+%% Question 3 no control
+VSL = 120;
+
+x1_11question3_no = [20 * ones(4,1); 90 * ones(4,1); 0; VSL; 1; 7000+100*E1; 1500];
+x1_11question3_no= repmat(x1_11question3_no,1,11);
+
+x12_60question3_no = [20 * ones(4,1); 90 * ones(4,1); 0; VSL; 1; 2000+100*E2; 1500];
+x12_60question3_no = repmat(x12_60question3_no,1,49);
+
+x0question3_no = [x1_11question3_no,x12_60question3_no];
+
+lb1question3_no = [20; 20; 20; 20; 90 * ones(4,1); 0; speedLimit; 1; 7000+100*E1; 1500];
+
+lb2_11question3_no = [0; 0; 0; 0; 60 * ones(4,1); 0; speedLimit; 1; 7000+100*E1; 1500];
+lb2_11question3_no = repmat(lb2_11question3_no,1,10);
+
+lb12_60question3_no = [0; 0; 0; 0; 60 * ones(4,1); 0; speedLimit; 1; 2000+100*E2; 1500];
+lb12_60question3_no = repmat(lb12_60question3_no,1,49);
+
+lbquestion3_no = [lb1question3_no,lb2_11question3_no,lb12_60question3_no];
+
+ub1question3_no = [20; 20; 20; 20; 90 * ones(4,1); Inf; speedLimit; 1; 7000+100*E1; 1500];
+
+ub2_11question3_no = [rho_m * ones(4,1); speedLimit * ones(4,1); Inf; speedLimit; 1; 7000+100*E1; 1500];
+ub2_11question3_no = repmat(ub2_11question3_no,1,10);
+
+ub12_60question3_no = [rho_m * ones(4,1); speedLimit * ones(4,1); Inf; speedLimit; 1; 2000+100*E2; 1500];
+ub12_60question3_no = repmat(ub12_60question3_no,1,49);
+
+ubquestion3_no = [ub1question3_no,ub2_11question3_no,ub12_60question3_no];
+%fun = @g;
+nlconfunc = @nlcon;
+xQuestion3_no = fmincon(@fun,x0question3_no,[],[],[],[],lbquestion3_no,ubquestion3_no,nlconfunc);
+fun(xQuestion3_no)/60/60
 
 %% Question 3 60 km/h
 VSL = 60;
@@ -210,6 +244,8 @@ fun(xQuestion4)/60/60
 
 %% plots
 figure('Name','Vsl')
+plot(xQuestion3_no(10,:))
+hold on
 plot(xQuestion3_60(10,:))
 hold on
 plot(xQuestion3_120(10,:))
@@ -218,7 +254,7 @@ plot(xQuestion3_77(10,:))
 title('Vsl')
 xlabel('k')
 ylabel('Speed [km/h]')
-legend('question 3 initial guess 60 km/h','question 3 initial guess 120 km/h','question 3 initial guess 77.15 km/h')
+legend('no control','question 3 initial guess 60 km/h','question 3 initial guess 120 km/h','question 3 initial guess 77.15 km/h')
 
 figure('Name','Vsl question 4')
 plot(xQuestion4(10,:))
@@ -228,13 +264,23 @@ ylabel('Speed [km/h]')
 legend('question 4')
 
 figure('Name','ramp queue')
+plot(xQuestion3_no(9,:))
+hold on
+plot(xQuestion3_120(9,:))
+hold on
+plot(xQuestion3_60(9,:))
+hold on
 plot(xQuestion4(9,:))
 title('ramp queue')
-legend('question 4')
+xlabel('k')
+ylabel('cars')
+legend('no control','question 3 initial guess 60 km/h','question 3 initial guess 120 km/h','question 4')
 
 figure('Name','ramp metering rate')
 plot(xQuestion4(11,:))
 title('ramp metering rate')
+xlabel('k')
+ylabel('r(k)')
 legend('question 4')
 
 
