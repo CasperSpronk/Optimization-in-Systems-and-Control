@@ -30,44 +30,113 @@ rho_m = 120;                    % [veh/km/lane]
 %% Question 1
 % u = [Vsl(k); r(k); q0(k); Dr(k)]
 
- 
-%% Question 2
-VSL = 120;
+%% Question 3 60 km/h
+VSL = 60;
 
-x1_11 = [20 * ones(4,1); 90 * ones(4,1); 0; VSL; 1; 7000+100*E1; 1500];
-x1_11 = repmat(x1_11,1,11);
+x1_11question3_60 = [20 * ones(4,1); 90 * ones(4,1); 0; VSL; 1; 7000+100*E1; 1500];
+x1_11question3_60 = repmat(x1_11question3_60,1,11);
 
-x12_60 = [20 * ones(4,1); 90 * ones(4,1); 0; VSL; 1; 2000+100*E2; 1500];
-x12_60 = repmat(x12_60,1,49);
+x12_60question3_60 = [20 * ones(4,1); 90 * ones(4,1); 0; VSL; 1; 2000+100*E2; 1500];
+x12_60question3_60 = repmat(x12_60question3_60,1,49);
 
-x0 = [x1_11,x12_60];
+x0question3_60 = [x1_11question3_60,x12_60question3_60];
 
-lb1 = [20; 20; 20; 20; 90 * ones(4,1); 0; 60; 1; 7000+100*E1; 1500];
+lb1question3_60 = [20; 20; 20; 20; 90 * ones(4,1); 0; 60; 1; 7000+100*E1; 1500];
 
-lb2_11 = [0; 0; 0; 0; 60 * ones(4,1); 0; 60; 1; 7000+100*E1; 1500];
-lb2_11 = repmat(lb2_11,1,10);
+lb2_11question3_60 = [0; 0; 0; 0; 60 * ones(4,1); 0; 60; 1; 7000+100*E1; 1500];
+lb2_11question3_60 = repmat(lb2_11question3_60,1,10);
 
-lb12_60 = [0; 0; 0; 0; 60 * ones(4,1); 0; 60; 1; 2000+100*E2; 1500];
-lb12_60 = repmat(lb12_60,1,49);
+lb12_60question3_60 = [0; 0; 0; 0; 60 * ones(4,1); 0; 60; 1; 2000+100*E2; 1500];
+lb12_60question3_60 = repmat(lb12_60question3_60,1,49);
 
-lb = [lb1,lb2_11,lb12_60];
+lbquestion3_60 = [lb1question3_60,lb2_11question3_60,lb12_60question3_60];
 
-ub1 = [20; 20; 20; 20; 90 * ones(4,1); 0; speedLimit; 1; 7000+100*E1; 1500];
+ub1question3_60 = [20; 20; 20; 20; 90 * ones(4,1); 0; speedLimit; 1; 7000+100*E1; 1500];
 
-ub2_11 = [rho_m * ones(4,1); speedLimit * ones(4,1); 0; speedLimit; 1; 7000+100*E1; 1500];
-ub2_11 = repmat(ub2_11,1,10);
+ub2_11question3_60 = [rho_m * ones(4,1); speedLimit * ones(4,1); 0; speedLimit; 1; 7000+100*E1; 1500];
+ub2_11question3_60 = repmat(ub2_11question3_60,1,10);
 
-ub12_60 = [rho_m * ones(4,1); speedLimit * ones(4,1); 0; speedLimit; 1; 2000+100*E2; 1500];
-ub12_60 = repmat(ub12_60,1,49);
+ub12_60question3_60 = [rho_m * ones(4,1); speedLimit * ones(4,1); 0; speedLimit; 1; 2000+100*E2; 1500];
+ub12_60question3_60 = repmat(ub12_60question3_60,1,49);
 
-ub = [ub1,ub2_11,ub12_60];
+ubquestion3_60 = [ub1question3_60,ub2_11question3_60,ub12_60question3_60];
 %fun = @g;
 nlconfunc = @nlcon;
-x = fmincon(@fun,x0,[],[],[],[],lb,ub,nlconfunc);
+x = fmincon(@fun,x0question3_60,[],[],[],[],lbquestion3_60,ubquestion3_60,nlconfunc);
+TTS = 0;
+fun(x)/60/60
+%% Question 3 120 km/h
+VSL = 120;
+
+x1_11question3_120 = [20 * ones(4,1); 90 * ones(4,1); 0; VSL; 1; 7000+100*E1; 1500];
+x1_11question3_120 = repmat(x1_11question3_120,1,11);
+
+x12_60question3_120 = [20 * ones(4,1); 90 * ones(4,1); 0; VSL; 1; 2000+100*E2; 1500];
+x12_60question3_120 = repmat(x12_60question3_120,1,49);
+
+x0question3_120 = [x1_11question3_120,x12_60question3_120];
+
+lb1question3_120 = [20; 20; 20; 20; 90 * ones(4,1); 0; 60; 1; 7000+100*E1; 1500];
+
+lb2_11question3_120 = [0; 0; 0; 0; 60 * ones(4,1); 0; 60; 1; 7000+100*E1; 1500];
+lb2_11question3_120 = repmat(lb2_11question3_120,1,10);
+
+lb12_60question3_120 = [0; 0; 0; 0; 60 * ones(4,1); 0; 60; 1; 2000+100*E2; 1500];
+lb12_60question3_120 = repmat(lb12_60question3_120,1,49);
+
+lbquestion3_120 = [lb1question3_120,lb2_11question3_120,lb12_60question3_120];
+
+ub1question3_120 = [20; 20; 20; 20; 90 * ones(4,1); 0; speedLimit; 1; 7000+100*E1; 1500];
+
+ub2_11question3_120 = [rho_m * ones(4,1); speedLimit * ones(4,1); 0; speedLimit; 1; 7000+100*E1; 1500];
+ub2_11question3_120 = repmat(ub2_11question3_120,1,10);
+
+ub12_60question3_120 = [rho_m * ones(4,1); speedLimit * ones(4,1); 0; speedLimit; 1; 2000+100*E2; 1500];
+ub12_60question3_120 = repmat(ub12_60question3_120,1,49);
+
+ubquestion3_120 = [ub1question3_120,ub2_11question3_120,ub12_60question3_120];
+%fun = @g;
+nlconfunc = @nlcon;
+x = fmincon(@fun,x0question3_120,[],[],[],[],lbquestion3_120,ubquestion3_120,nlconfunc);
 TTS = 0;
 fun(x)/60/60
 
+%% Question 4
+rampMaxQueue = 20 - E3;
 
+VSL = 60;
+
+x1_11question4 = [20 * ones(4,1); 90 * ones(4,1); 0; VSL; 1; 7000+100*E1; 1500];
+x1_11question4 = repmat(x1_11question4,1,11);
+
+x12_60question4 = [20 * ones(4,1); 90 * ones(4,1); 0; VSL; 1; 2000+100*E2; 1500];
+x12_60question4 = repmat(x12_60question4,1,49);
+
+x0question3_120 = [x1_11question4,x12_60question4];
+
+lb1question4 = [20; 20; 20; 20; 90 * ones(4,1); 0; 60; 0; 7000+100*E1; 1500];
+
+lb2_11question4 = [0; 0; 0; 0; 60 * ones(4,1); 0; 60; 0; 7000+100*E1; 1500];
+lb2_11question4 = repmat(lb2_11question4,1,10);
+
+lb12_60question4 = [0; 0; 0; 0; 60 * ones(4,1); 0; 60; 0; 2000+100*E2; 1500];
+lb12_60question4 = repmat(lb12_60question4,1,49);
+
+lbquestion3_120 = [lb1question4,lb2_11question4,lb12_60question4];
+
+ub1question4 = [20; 20; 20; 20; 90 * ones(4,1); rampMaxQueue; speedLimit; 1; 7000+100*E1; 1500];
+
+ub2_11question4 = [rho_m * ones(4,1); speedLimit * ones(4,1); rampMaxQueue; speedLimit; 1; 7000+100*E1; 1500];
+ub2_11question4 = repmat(ub2_11question4,1,10);
+
+ub12_60question4 = [rho_m * ones(4,1); speedLimit * ones(4,1); rampMaxQueue; speedLimit; 1; 2000+100*E2; 1500];
+ub12_60question4 = repmat(ub12_60question4,1,49);
+
+ubquestion4 = [ub1question4,ub2_11question4,ub12_60question4];
+%fun = @g;
+nlconfunc = @nlcon;
+x = fmincon(@fun,x0question3_120,[],[],[],[],lbquestion4,ubquestion4,nlconfunc);
+fun(x)/60/60
 
 
 
